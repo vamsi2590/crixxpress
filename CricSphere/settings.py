@@ -117,8 +117,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -128,5 +126,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # API Settings
 API_BASE_URL = "https://cricbuzz-cricket.p.rapidapi.com"
 
-RAPIDAPI_KEY = "b997058c9amshecd4dc22389adf2p176f69jsn7efed256afd7"
+RAPIDAPI_KEY = "1651fc0766msh7ca89ea49851cbcp1d37c4jsn75e5d5b95943"
 RAPIDAPI_HOST = "cricbuzz-cricket.p.rapidapi.com"
