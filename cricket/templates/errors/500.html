@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Server Error - Cricket Hub{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-content">
+        <h1>500</h1>
+        <h2>Server Error</h2>
+        <p>Sorry, something went wrong on our end. Please try again later.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary">Go Home</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .error-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 80px);
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .error-content h1 {
+        font-size: 6rem;
+        margin: 0;
+        background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .error-content h2 {
+        font-size: 2rem;
+        margin: 1rem 0;
+        color: var(--text-primary);
+    }
+    
+    .error-content p {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}

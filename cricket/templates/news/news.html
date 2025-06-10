@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}Latest Cricket News{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Latest Cricket News</h1>
+
+    {% if news_items.error %}
+        <p class="error-message">{{ news_items.error }}</p>
+    {% else %}
+        <div class="news-grid">
+            {% for item in news_items.storyList %}
+                {% if item.story %}
+                    <div class="news-card">
+                        <div class="news-content">
+                            <div class="news-context">{{ item.story.context }}</div>
+                            <h2 class="news-title">
+                                <a href="{% url 'news_detail' item.story.id %}">{{ item.story.hline }}</a>
+                            </h2>
+                            <p class="news-intro">{{ item.story.intro }}</p>
+                            <div class="news-meta">
+                                <div class="news-type">{{ item.story.storyType }}</div>
+                                <div class="news-info">
+                                    <span class="news-source">{{ item.story.source }}</span>
+                                    <span class="news-time">{{ item.story.pubTime|date:"F j, Y" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="news-footer">
+            <p class="last-updated">Last Updated: {{ news_items.lastUpdatedTime|date:"F j, Y H:i" }}</p>
+            <a href="{{ news_items.appIndex.webURL }}" class="view-all" target="_blank">View All News</a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: #2c3e50;
+        font-size: 2.5rem;
+    }
+
+    .news-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .news-card {
+        display: flex;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .news-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+    }
+
+    .news-content {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .news-context {
+        display: inline-block;
+        background: #e74c3c;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .news-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+
+    .news-title a {
+        color: #2c3e50;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .news-title a:hover {
+        color: #3498db;
+    }
+
+    .news-intro {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .news-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid #eee;
+    }
+
+    .news-type {
+        background: #3498db;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+
+    .news-info {
+        display: flex;
+        gap: 1rem;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .news-footer {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .last-updated {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .view-all {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background 0.3s ease;
+    }
+
+    .view-all:hover {
+        background: #2980b9;
+    }
+
+    .error-message {
+        text-align: center;
+        padding: 2rem;
+        background: #fee;
+        color: #e74c3c;
+        border-radius: 8px;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        .news-card {
+            flex-direction: column;
+        }
+
+        .news-title {
+            font-size: 1.3rem;
+        }
+
+        .news-meta {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .news-footer {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}

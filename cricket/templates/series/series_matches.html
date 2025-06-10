@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Series Matches{% endblock %}
+
+{% block content %}
+<div class="matches-container">
+    <div class="container-fluid py-4">
+        {% if matches_data.error %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                {{ matches_data.error }}
+            </div>
+        {% else %}
+            <div class="series-header mb-4">
+                <h3 class="section-title">{{ matches_data.seriesName }}</h3>
+                <p class="series-dates text-center">
+                    {{ matches_data.startDate|date:"M d" }} - {{ matches_data.endDate|date:"M d, Y" }}
+                </p>
+            </div>
+
+            {% if matches_data.matchDetails %}
+                {% for detail in matches_data.matchDetails %}
+                    {% if detail.matchDetailsMap %}
+                        {% for match in detail.matchDetailsMap.match %}
+                            <div class="match-group mb-4">
+                                <h4 class="type-title">{{ match.matchInfo.matchFormat }}</h4>
+                                <div class="row g-4">
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="match-card">
+                                            <div class="match-status {% if match.matchInfo.state == 'Live' %}live{% endif %}">
+                                                {{ match.matchInfo.state }}
+                                            </div>
+                                            <div class="match-info">
+                                                <div class="venue">
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                    {{ match.matchInfo.venueInfo.ground }}, {{ match.matchInfo.venueInfo.city }}
+                                                </div>
+                                                <div class="match-time">
+                                                    <i class="far fa-clock"></i>
+                                                    {{ match.matchInfo.startDate|date:"M d, Y - h:i A" }}
+                                                </div>
+                                            </div>
+                                            <div class="teams">
+                                                <div class="team">
+                                                    <span class="team-name">{{ match.matchInfo.team1.teamName }}</span>
+                                                    {% if match.matchScore.team1Score %}
+                                                        <span class="score">{{ match.matchScore.team1Score.inngs1.runs }}/{{ match.matchScore.team1Score.inngs1.wickets }} ({{ match.matchScore.team1Score.inngs1.overs }})</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="vs">VS</div>
+                                                <div class="team">
+                                                    <span class="team-name">{{ match.matchInfo.team2.teamName }}</span>
+                                                    {% if match.matchScore.team2Score %}
+                                                        <span class="score">{{ match.matchScore.team2Score.inngs1.runs }}/{{ match.matchScore.team2Score.inngs1.wickets }} ({{ match.matchScore.team2Score.inngs1.overs }})</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="match-actions">
+                                                <a href="{% url 'match_info' match_id=match.matchInfo.matchId %}" class="action-btn">
+                                                    <i class="fas fa-info-circle"></i> Details
+                                                </a>
+                                                <a href="{% url 'commentary' match_id=match.matchInfo.matchId %}" class="action-btn">
+                                                    <i class="fas fa-comments"></i> Commentary
+                                                </a>
+                                                <a href="{% url 'scorecard' match_id=match.matchInfo.matchId %}" class="action-btn">
+                                                    <i class="fas fa-clipboard"></i> Scorecard
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No matches available for this series.
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .matches-container {
+        min-height: 100vh;
+        background-color: #f8f9fa;
+        padding: 20px 0;
+    }
+
+    .section-title {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .series-dates {
+        color: #6c757d;
+        font-size: 1rem;
+        margin-bottom: 30px;
+    }
+
+    .type-title {
+        color: #2c3e50;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #3498db;
+    }
+
+    .match-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        position: relative;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .match-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .match-status {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        background-color: #e9ecef;
+        color: #6c757d;
+    }
+
+    .match-status.live {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .match-info {
+        margin-bottom: 15px;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .venue, .match-time {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 5px;
+    }
+
+    .teams {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .team {
+        margin: 10px 0;
+    }
+
+    .team-name {
+        font-weight: 600;
+        color: #2c3e50;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .score {
+        color: #3498db;
+        font-size: 0.9rem;
+    }
+
+    .vs {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin: 5px 0;
+    }
+
+    .match-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        color: #6c757d;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        background-color: #3498db;
+        color: #fff;
+        border-color: #3498db;
+    }
+
+    @media (max-width: 768px) {
+        .match-actions {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            width: 100%;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+        }
+
+        .type-title {
+            font-size: 1.1rem;
+        }
+    }
+</style>
+{% endblock %}

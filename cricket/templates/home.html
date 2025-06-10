@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+{% block title %}CricXpress{% endblock %}
+
+{% block content %}
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="brand">
+                        <span class="brand-text animate-slide-in">RO</span>
+                        <div class="brand-x animate-pulse">X</div>
+                        <span class="brand-text animate-slide-in-delay">KO</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-overlay"></div>
+            <video autoplay muted loop class="hero-video">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-cricket-player-hitting-a-ball-40677-large.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-icon">🏏</div>
+                <div class="stat-value">150+</div>
+                <div class="stat-label">Live Matches</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🌍</div>
+                <div class="stat-value">20+</div>
+                <div class="stat-label">Countries</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value">1M+</div>
+                <div class="stat-label">Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">Coverage</div>
+            </div>
+        </div>
+
+        <!-- Feature Cards -->
+        <div class="features">
+            <a href="{% url 'live_matches' %}" class="feature">
+                <div class="feature-content">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Live Scores</h3>
+                    <p>Real-time match updates</p>
+                </div>
+                <div class="feature-bg live-bg"></div>
+            </a>
+            <a href="{% url 'news' %}" class="feature">
+                <div class="feature-content">
+                    <div class="feature-icon">📰</div>
+                    <h3>Latest News</h3>
+                    <p>Breaking cricket stories</p>
+                </div>
+                <div class="feature-bg news-bg"></div>
+            </a>
+            <a href="{% url 'default_ranking' %}" class="feature">
+                <div class="feature-content">
+                    <div class="feature-icon">🏆</div>
+                    <h3>Rankings</h3>
+                    <p>Player & team rankings</p>
+                </div>
+                <div class="feature-bg rankings-bg"></div>
+            </a>
+        </div>
+    </main>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #0a0a1a;
+        --secondary: #1a1b2e;
+        --accent: #3498db;
+        --text: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.7);
+        --success: #2ecc71;
+        --gradient: linear-gradient(135deg, var(--accent), #2980b9);
+    }
+
+    .main-content {
+        min-height: 100vh;
+        background: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+        position: relative;
+        height: 60vh;
+        min-height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .hero-video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 2;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 3;
+        text-align: center;
+        color: var(--text);
+        padding: 20px;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    .brand-text {
+        background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-size: 200% 200%;
+        animation: gradient 8s ease infinite;
+        opacity: 0;
+    }
+
+    .animate-slide-in {
+        animation: slideIn 0.8s ease forwards;
+    }
+
+    .animate-slide-in-delay {
+        animation: slideIn 0.8s ease forwards 0.4s;
+    }
+
+    .brand-x {
+        color: #3498db;
+        margin: 0 10px;
+        transform: skew(-15deg);
+        position: relative;
+        animation: pulseGlow 2s infinite;
+    }
+
+    @keyframes slideIn {
+        0% {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes gradient {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    @keyframes pulseGlow {
+        0% {
+            color: #3498db;
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+        50% {
+            color: #2ecc71;
+            text-shadow: 0 0 20px rgba(46, 204, 113, 0.8),
+                         0 0 30px rgba(46, 204, 113, 0.6),
+                         0 0 40px rgba(46, 204, 113, 0.4);
+            transform: skew(-15deg) scale(1.1);
+        }
+        100% {
+            color: #3498db;
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+    }
+
+    /* Quick Stats */
+    .quick-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 40px 20px;
+        background: var(--secondary);
+    }
+
+    .stat-card {
+        text-align: center;
+        padding: 2rem;
+        background: var(--primary);
+        border-radius: 15px;
+        color: var(--text);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+    }
+
+    /* Features */
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 40px 20px;
+    }
+
+    .feature {
+        position: relative;
+        height: 200px;
+        border-radius: 15px;
+        overflow: hidden;
+        color: var(--text);
+        text-decoration: none;
+    }
+
+    .feature-content {
+        position: relative;
+        z-index: 2;
+        padding: 20px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.6);
+        transition: background 0.3s ease;
+    }
+
+    .feature:hover .feature-content {
+        background: rgba(0, 0, 0, 0.7);
+    }
+
+    .feature-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        background-size: cover;
+        background-position: center;
+        transition: transform 0.3s ease;
+    }
+
+    .feature:hover .feature-bg {
+        transform: scale(1.1);
+    }
+
+    .live-bg {
+        background-image: url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');
+    }
+
+    .news-bg {
+        background-image: url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');
+    }
+
+    .rankings-bg {
+        background-image: url('https://images.unsplash.com/photo-1587280501635-68a0e82cd5ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');
+    }
+
+    @media (max-width: 768px) {
+        .brand {
+            font-size: 3rem;
+        }
+
+        .hero {
+            min-height: 400px;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+        }
+
+        .feature {
+            height: 150px;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+
+{% block title %}Cricket Rankings - {{ category|title }} ({{ format|upper }}){% endblock %}
+
+{% block extra_css %}
+<style>
+    .rankings-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 1rem;
+    }
+
+    .filters {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .filter-options {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .filter-option {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        background: var(--gradient-dark);
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .filter-option:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        background: var(--gradient-primary);
+        color: white;
+        text-decoration: none;
+    }
+
+    .filter-option.active {
+        background: var(--gradient-primary);
+        color: white !important;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .filter-option:visited {
+        color: var(--text-primary);
+        text-decoration: none;
+    }
+
+    .filter-option.active:visited {
+        color: white !important;
+        text-decoration: none;
+    }
+
+    .rankings-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 0.5rem;
+    }
+
+    .rankings-table th {
+        padding: 1rem;
+        text-align: left;
+        color: var(--text-secondary);
+        font-weight: 600;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .rankings-table td {
+        padding: 1rem;
+        background: var(--gradient-dark);
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .rankings-table tr td:first-child {
+        border-left: 1px solid var(--border-color);
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    .rankings-table tr td:last-child {
+        border-right: 1px solid var(--border-color);
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    .player-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .player-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .player-name:hover {
+        color: var(--accent-color);
+        text-decoration: none;
+    }
+
+    .player-country {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .rank-number {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .rating {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .trend {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .trend i {
+        font-size: 1.25rem;
+    }
+
+    .trend-up {
+        color: #4CAF50;
+    }
+
+    .trend-down {
+        color: #F44336;
+    }
+
+    .trend-flat {
+        color: var(--text-secondary);
+    }
+
+    .last-updated {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+        .filters {
+            flex-direction: column;
+        }
+
+        .rankings-table {
+            font-size: 0.875rem;
+        }
+
+        .last-updated {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rankings-container">
+    <h1 class="page-title">{{ category|title }} Rankings ({{ format|upper }})</h1>
+
+    <div class="filters">
+        <div class="filter-group">
+            <span class="filter-label">Format:</span>
+            <div class="filter-options">
+                {% for f in format_options %}
+                    <a href="{% url 'player_ranking' format=f category=category %}{% if is_women %}?isWomen=1{% endif %}" 
+                       class="filter-option {% if format == f %}active{% endif %}">
+                        {{ f|upper }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <span class="filter-label">Category:</span>
+            <div class="filter-options">
+                {% for c in category_options %}
+                    <a href="{% url 'player_ranking' format=format category=c %}{% if is_women %}?isWomen=1{% endif %}" 
+                       class="filter-option {% if category == c %}active{% endif %}">
+                        {{ c|title }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <span class="filter-label">Gender:</span>
+            <div class="filter-options">
+                <a href="{% url 'player_ranking' format=format category=category %}" 
+                   class="filter-option {% if not is_women %}active{% endif %}">
+                    Men
+                </a>
+                <a href="{% url 'player_ranking' format=format category=category %}?isWomen=1" 
+                   class="filter-option {% if is_women %}active{% endif %}">
+                    Women
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if rankings.rank %}
+        <table class="rankings-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Rating</th>
+                    <th>Trend</th>
+                    <th>Last Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in rankings.rank %}
+                    <tr>
+                        <td>
+                            <span class="rank-number">{{ player.rank }}</span>
+                        </td>
+                        <td>
+                            <div class="player-info">
+                                <div>
+                                    <a href="{% url 'player_info' player.id %}" class="player-name">{{ player.name }}</a>
+                                    <div class="player-country">{{ player.country }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="rating">{{ player.rating }}</span>
+                        </td>
+                        <td>
+                            <div class="trend">
+                                {% if player.trend == "Up" %}
+                                    <i class="fas fa-arrow-up trend-up"></i>
+                                    {% if player.difference %}+{{ player.difference }}{% endif %}
+                                {% elif player.trend == "Down" %}
+                                    <i class="fas fa-arrow-down trend-down"></i>
+                                    {% if player.difference %}-{{ player.difference }}{% endif %}
+                                {% else %}
+                                    <i class="fas fa-minus trend-flat"></i>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="last-updated">{{ player.lastUpdatedOn }}</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="error-message">No ranking data available</div>
+    {% endif %}
+</div>
+{% endblock %}

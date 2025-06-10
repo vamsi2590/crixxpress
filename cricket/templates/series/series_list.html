@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Series{% endblock %}
+
+{% block content %}
+<div class="series-container">
+    <div class="container-fluid py-4">
+        {% if series_data.error %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                {{ series_data.error }}
+            </div>
+        {% else %}
+            <div class="nav-section mb-4">
+                <h3 class="section-title mb-3">Cricket Series</h3>
+                <div class="nav-buttons">
+                    <a href="{% url 'series_list' %}" class="nav-btn {% if series_type == 'international' %}active{% endif %}">
+                        <i class="fas fa-globe"></i> International
+                    </a>
+                    <a href="{% url 'series_list_type' 'league' %}" class="nav-btn {% if series_type == 'league' %}active{% endif %}">
+                        <i class="fas fa-trophy"></i> League
+                    </a>
+                    <a href="{% url 'series_list_type' 'domestic' %}" class="nav-btn {% if series_type == 'domestic' %}active{% endif %}">
+                        <i class="fas fa-home"></i> Domestic
+                    </a>
+                    <a href="{% url 'series_list_type' 'women' %}" class="nav-btn {% if series_type == 'women' %}active{% endif %}">
+                        <i class="fas fa-venus"></i> Women
+                    </a>
+                </div>
+            </div>
+
+            {% if series_data.seriesMapProto %}
+                {% for month_group in series_data.seriesMapProto %}
+                    <div class="series-group mb-4">
+                        <h4 class="month-title">{{ month_group.month }}</h4>
+                        <div class="row g-4">
+                            {% for series in month_group.series %}
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="series-card">
+                                        <div class="series-header">
+                                            <h5 class="series-name">{{ series.name }}</h5>
+                                            <span class="series-dates">
+                                                {{ series.startDt|date:"M d" }} - {{ series.endDt|date:"M d, Y" }}
+                                            </span>
+                                        </div>
+                                        <div class="series-actions">
+                                            <a href="{% url 'series_matches' series.id %}" class="action-btn">
+                                                <i class="fas fa-cricket-ball"></i> Matches
+                                            </a>
+                                            <a href="{% url 'series_squads' series.id %}" class="action-btn">
+                                                <i class="fas fa-users"></i> Squads
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No series available at the moment.
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .series-container {
+        min-height: 100vh;
+        background-color: #f8f9fa;
+        padding: 20px 0;
+    }
+
+    .section-title {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .nav-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .nav-btn {
+        padding: 8px 16px;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        color: #6c757d;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+        background-color: #3498db;
+        color: #fff;
+        border-color: #3498db;
+    }
+
+    .month-title {
+        color: #2c3e50;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #3498db;
+    }
+
+    .series-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .series-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .series-header {
+        margin-bottom: 15px;
+    }
+
+    .series-name {
+        color: #2c3e50;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .series-dates {
+        color: #6c757d;
+        font-size: 0.9rem;
+        display: block;
+    }
+
+    .series-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: auto;
+    }
+
+    .action-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        color: #6c757d;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        background-color: #3498db;
+        color: #fff;
+        border-color: #3498db;
+    }
+
+    @media (max-width: 768px) {
+        .nav-buttons {
+            flex-direction: column;
+        }
+
+        .nav-btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        .series-actions {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

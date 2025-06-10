@@ -1,0 +1,526 @@
+{% extends 'base.html' %}
+{% load cricket_extras %}
+{% load static %}
+
+{% block title %}{{ player.name }} - Player Profile{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<style>
+    :root {
+        --bg-gradient: linear-gradient(135deg, #1a1c2e 0%, #161827 100%);
+        --card-gradient: linear-gradient(145deg, rgba(30, 32, 50, 0.9) 0%, rgba(25, 27, 42, 0.8) 100%);
+        --accent-gradient: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+        --card-bg: rgba(30, 32, 50, 0.7);
+        --text-primary: #f3f4f6;
+        --text-secondary: #9ca3af;
+        --accent-color: #4f46e5;
+        --accent-light: #6366f1;
+        --border-color: rgba(75, 85, 99, 0.2);
+        --success-color: #10b981;
+    }
+
+    .player-profile {
+        max-width: 1000px;
+        margin: 1rem auto;
+        padding: 1rem;
+        background: var(--bg-gradient);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-header {
+        background: var(--card-gradient);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(8px);
+    }
+
+    .player-name {
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .meta-item {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 0.75rem;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .meta-item i {
+        color: var(--accent-light);
+        font-size: 1rem;
+    }
+
+    .meta-item span {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .card {
+        background: var(--card-gradient);
+        border-radius: 12px;
+        padding: 1.25rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(8px);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--accent-color);
+    }
+
+    .card-header h3 {
+        color: var(--accent-light);
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .info-grid {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .info-item {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 0.75rem;
+        border-radius: 8px;
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 0.75rem;
+        align-items: center;
+        transition: transform 0.2s ease;
+    }
+
+    .info-item:hover {
+        transform: translateY(-2px);
+        background: rgba(79, 70, 229, 0.1);
+    }
+
+    .label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .value {
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .stats-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 0.25rem;
+        font-size: 0.9rem;
+    }
+
+    .stats-table th {
+        background: rgba(79, 70, 229, 0.1);
+        color: var(--accent-light);
+        font-weight: 600;
+        padding: 0.75rem;
+        text-align: left;
+    }
+
+    .stats-table td {
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-primary);
+        padding: 0.75rem;
+    }
+
+    .stats-table tr:hover td {
+        background: rgba(79, 70, 229, 0.1);
+    }
+
+    .rankings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+
+    .ranking-item {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+
+    .ranking-format {
+        color: var(--accent-light);
+        font-size: 1rem;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .ranking-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .rank-box {
+        text-align: center;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        transition: transform 0.2s ease;
+    }
+
+    .rank-box:hover {
+        transform: translateY(-2px);
+        background: rgba(79, 70, 229, 0.1);
+    }
+
+    .rank-label {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .rank-value {
+        color: var(--accent-light);
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .teams-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .team-item {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 0.75rem;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        transition: transform 0.2s ease;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .team-item:hover {
+        transform: translateY(-2px);
+        background: rgba(79, 70, 229, 0.1);
+    }
+
+    .bio-content {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+        .player-profile {
+            margin: 0.5rem;
+            padding: 0.75rem;
+        }
+
+        .player-name {
+            font-size: 1.75rem;
+        }
+
+        .meta-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .info-item {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .stats-table {
+            display: block;
+            overflow-x: auto;
+            font-size: 0.8rem;
+        }
+
+        .stats-table th,
+        .stats-table td {
+            white-space: nowrap;
+            padding: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="player-profile">
+    <div class="profile-header">
+        <h1 class="player-name">{{ player.name }}</h1>
+        <div class="meta-grid">
+            <div class="meta-item">
+                <i class="fas fa-trophy"></i>
+                <span>{{ player.intlTeam }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-running"></i>
+                <span>{{ player.role }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-calendar"></i>
+                <span>{{ player.DoB }}</span>
+            </div>
+            {% if player.birthPlace %}
+            <div class="meta-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>{{ player.birthPlace }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-user"></i>
+                <h3>Personal Info</h3>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="label">Full Name</span>
+                    <span class="value">{{ player.name }}</span>
+                </div>
+                {% if player.height %}
+                <div class="info-item">
+                    <span class="label">Height</span>
+                    <span class="value">{{ player.height }}</span>
+                </div>
+                {% endif %}
+                <div class="info-item">
+                    <span class="label">Batting</span>
+                    <span class="value">{{ player.bat }}</span>
+                </div>
+                {% if player.bowl %}
+                <div class="info-item">
+                    <span class="label">Bowling</span>
+                    <span class="value">{{ player.bowl }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if player.bio %}
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-book"></i>
+                <h3>Biography</h3>
+            </div>
+            <div class="bio-content">
+                {{ player.bio|safe }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if player.batting_stats %}
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-baseball-ball"></i>
+            <h3>Batting Stats</h3>
+        </div>
+        <div class="stats-table-wrapper">
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        {% for header in player.batting_stats.headers %}
+                        <th>{{ header }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in player.batting_stats.values %}
+                    <tr>
+                        {% for value in row.values %}
+                        <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if player.bowling_stats %}
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-bowling-ball"></i>
+            <h3>Bowling Stats</h3>
+        </div>
+        <div class="stats-table-wrapper">
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        {% for header in player.bowling_stats.headers %}
+                        <th>{{ header }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in player.bowling_stats.values %}
+                    <tr>
+                        {% for value in row.values %}
+                        <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if player.rankings.bat or player.rankings.bowl %}
+    <div class="content-grid">
+        {% if player.rankings.bat %}
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-line"></i>
+                <h3>Batting Rankings</h3>
+            </div>
+            <div class="rankings-grid">
+                <div class="ranking-item">
+                    <div class="ranking-format">Test</div>
+                    <div class="ranking-details">
+                        <div class="rank-box">
+                            <div class="rank-label">Current</div>
+                            <div class="rank-value">#{{ player.rankings.bat.0.testRank }}</div>
+                        </div>
+                        <div class="rank-box">
+                            <div class="rank-label">Best</div>
+                            <div class="rank-value">#{{ player.rankings.bat.0.testBestRank }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ranking-item">
+                    <div class="ranking-format">ODI</div>
+                    <div class="ranking-details">
+                        <div class="rank-box">
+                            <div class="rank-label">Current</div>
+                            <div class="rank-value">#{{ player.rankings.bat.0.odiRank }}</div>
+                        </div>
+                        <div class="rank-box">
+                            <div class="rank-label">Best</div>
+                            <div class="rank-value">#{{ player.rankings.bat.0.odiBestRank }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ranking-item">
+                    <div class="ranking-format">T20I</div>
+                    <div class="ranking-details">
+                        <div class="rank-box">
+                            <div class="rank-label">Current</div>
+                            <div class="rank-value">#{{ player.rankings.bat.0.t20Rank }}</div>
+                        </div>
+                        <div class="rank-box">
+                            <div class="rank-label">Best</div>
+                            <div class="rank-value">#{{ player.rankings.bat.0.t20BestRank }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if player.rankings.bowl %}
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-line"></i>
+                <h3>Bowling Rankings</h3>
+            </div>
+            <div class="rankings-grid">
+                <div class="ranking-item">
+                    <div class="ranking-format">Test</div>
+                    <div class="ranking-details">
+                        <div class="rank-box">
+                            <div class="rank-label">Current</div>
+                            <div class="rank-value">{% if player.rankings.bowl.0.testRank != "0" %}#{{ player.rankings.bowl.0.testRank }}{% else %}-{% endif %}</div>
+                        </div>
+                        <div class="rank-box">
+                            <div class="rank-label">Best</div>
+                            <div class="rank-value">{% if player.rankings.bowl.0.testBestRank != "0" %}#{{ player.rankings.bowl.0.testBestRank }}{% else %}-{% endif %}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ranking-item">
+                    <div class="ranking-format">ODI</div>
+                    <div class="ranking-details">
+                        <div class="rank-box">
+                            <div class="rank-label">Current</div>
+                            <div class="rank-value">{% if player.rankings.bowl.0.odiRank != "0" %}#{{ player.rankings.bowl.0.odiRank }}{% else %}-{% endif %}</div>
+                        </div>
+                        <div class="rank-box">
+                            <div class="rank-label">Best</div>
+                            <div class="rank-value">{% if player.rankings.bowl.0.odiBestRank != "0" %}#{{ player.rankings.bowl.0.odiBestRank }}{% else %}-{% endif %}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ranking-item">
+                    <div class="ranking-format">T20I</div>
+                    <div class="ranking-details">
+                        <div class="rank-box">
+                            <div class="rank-label">Current</div>
+                            <div class="rank-value">{% if player.rankings.bowl.0.t20Rank != "0" %}#{{ player.rankings.bowl.0.t20Rank }}{% else %}-{% endif %}</div>
+                        </div>
+                        <div class="rank-box">
+                            <div class="rank-label">Best</div>
+                            <div class="rank-value">{% if player.rankings.bowl.0.t20BestRank != "0" %}#{{ player.rankings.bowl.0.t20BestRank }}{% else %}-{% endif %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if player.teams %}
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-users"></i>
+            <h3>Teams</h3>
+        </div>
+        <div class="teams-grid">
+            {% for team in player.teams|split_string %}
+            <div class="team-item">
+                {{ team }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

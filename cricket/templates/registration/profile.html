@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Cricket Hub{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>Profile</h1>
+    </div>
+    
+    <div class="profile-content">
+        <div class="profile-section">
+            <h2>Account Information</h2>
+            <div class="info-group">
+                <label>Username</label>
+                <p>{{ user.username }}</p>
+            </div>
+            <div class="info-group">
+                <label>Email</label>
+                <p>{{ user.email }}</p>
+            </div>
+            <div class="info-group">
+                <label>Member Since</label>
+                <p>{{ user.date_joined|date:"F j, Y" }}</p>
+            </div>
+        </div>
+        
+        <div class="profile-actions">
+            <a href="{% url 'password_change' %}" class="btn btn-secondary">Change Password</a>
+            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .profile-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .profile-content {
+        background: var(--bg-primary);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+    }
+    
+    .profile-section {
+        margin-bottom: 2rem;
+    }
+    
+    .profile-section h2 {
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+    }
+    
+    .info-group {
+        margin-bottom: 1rem;
+    }
+    
+    .info-group label {
+        display: block;
+        color: var(--text-secondary);
+        margin-bottom: 0.25rem;
+        font-size: 0.875rem;
+    }
+    
+    .info-group p {
+        color: var(--text-primary);
+        font-size: 1rem;
+        margin: 0;
+    }
+    
+    .profile-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-start;
+        margin-top: 2rem;
+    }
+    
+    .btn-danger {
+        background-color: var(--error);
+        color: white;
+    }
+    
+    .btn-secondary {
+        background-color: var(--text-secondary);
+        color: white;
+    }
+</style>
+{% endblock %}

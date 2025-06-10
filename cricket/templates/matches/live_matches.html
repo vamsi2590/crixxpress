@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .nav-tabs-wrapper {
+        background: linear-gradient(135deg, #1a237e, #0d47a1);
+        padding: 2rem 1rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .nav-tabs-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=2000&q=80') center/cover;
+        opacity: 0.1;
+        z-index: 0;
+    }
+
+    .match-nav-tabs {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        gap: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .match-nav-link {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        padding: 1rem 2rem;
+        border-radius: 10px 10px 0 0;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .match-nav-link.active {
+        color: #1a237e;
+        background: white;
+        font-weight: 600;
+    }
+
+    .match-nav-link:hover:not(.active) {
+        color: white;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-3px);
+    }
+
+    .match-nav-link i {
+        font-size: 1.2rem;
+    }
+
+    .live-indicator {
+        width: 8px;
+        height: 8px;
+        background: #4CAF50;
+        border-radius: 50%;
+        margin-right: 5px;
+        position: relative;
+    }
+
+    .live-indicator::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: #4CAF50;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+        opacity: 0.5;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.5); opacity: 0; }
+        100% { transform: scale(1); opacity: 0.5; }
+    }
+
+    .live-matches-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        background: #f5f6fa;
+        min-height: calc(100vh - 200px);
+    }
+
+    .page-title {
+        display: none;
+    }
+
+    .match-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        height: fit-content;
+    }
+
+    .match-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .match-header {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        padding: 1rem;
+        position: relative;
+    }
+
+    .match-header h2 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .match-content {
+        padding: 1rem;
+    }
+
+    .teams-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .team {
+        text-align: center;
+        flex: 1;
+    }
+
+    .team-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.3rem;
+    }
+
+    .team-score {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #3498db;
+    }
+
+    .vs {
+        margin: 0 0.5rem;
+        color: #7f8c8d;
+    }
+
+    .match-info {
+        background: #f8f9fa;
+        padding: 0.8rem;
+        border-radius: 6px;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.3rem;
+        color: #666;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #34495e;
+    }
+
+    .status-badge {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.2rem 0.6rem;
+        background: rgba(52, 152, 219, 0.9);
+        color: white;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .match-footer {
+        padding: 0.8rem;
+        background: #f8f9fa;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+
+    .view-details {
+        text-decoration: none;
+        color: #3498db;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .view-details:hover {
+        color: #2980b9;
+    }
+
+    @media (max-width: 768px) {
+        .live-matches-container {
+            grid-template-columns: 1fr;
+            padding: 0.5rem;
+        }
+    }
+</style>
+
+<div class="nav-tabs-wrapper">
+    <div class="match-nav-tabs">
+        <a href="{% url 'live_matches' %}" class="match-nav-link active">
+            <span class="live-indicator"></span>
+            Live Matches
+        </a>
+        <a href="{% url 'upcoming_matches' %}" class="match-nav-link">
+            <i class="fas fa-calendar-alt"></i>
+            Upcoming
+        </a>
+        <a href="{% url 'recent_matches' %}" class="match-nav-link">
+            <i class="fas fa-history"></i>
+            Recent
+        </a>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="live-matches-container">
+        {% if live_data.error %}
+            <p class="no-matches">{{ live_data.error }}</p>
+        {% else %}
+            {% if live_data.typeMatches %}
+                {% for typeMatch in live_data.typeMatches %}
+                    {% for series in typeMatch.seriesMatches %}
+                        {% if series.seriesAdWrapper %}
+                            {% for match in series.seriesAdWrapper.matches %}
+                                <div class="match-card">
+                                    <div class="match-header">
+                                        <h2>{{ match.matchInfo.seriesName }}</h2>
+                                        <span class="status-badge">{{ match.matchInfo.status }}</span>
+                                    </div>
+                                    
+                                    <div class="match-content">
+                                        <div class="teams-container">
+                                            <div class="team">
+                                                <div class="team-name">{{ match.matchInfo.team1.teamName }}</div>
+                                                {% if match.matchScore.team1Score %}
+                                                    <div class="team-score">
+                                                        {{ match.matchScore.team1Score.inngs1.runs }}/{{ match.matchScore.team1Score.inngs1.wickets }}
+                                                        {% if match.matchScore.team1Score.inngs2 %}
+                                                            & {{ match.matchScore.team1Score.inngs2.runs }}/{{ match.matchScore.team1Score.inngs2.wickets }}
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="vs">vs</div>
+                                            <div class="team">
+                                                <div class="team-name">{{ match.matchInfo.team2.teamName }}</div>
+                                                {% if match.matchScore.team2Score %}
+                                                    <div class="team-score">
+                                                        {{ match.matchScore.team2Score.inngs1.runs }}/{{ match.matchScore.team2Score.inngs1.wickets }}
+                                                        {% if match.matchScore.team2Score.inngs2 %}
+                                                            & {{ match.matchScore.team2Score.inngs2.runs }}/{{ match.matchScore.team2Score.inngs2.wickets }}
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="match-info">
+                                            <div class="info-row">
+                                                <span class="info-label">Venue:</span>
+                                                <span>{{ match.matchInfo.venueInfo.ground }}, {{ match.matchInfo.venueInfo.city }}</span>
+                                            </div>
+                                            <div class="info-row">
+                                                <span class="info-label">Match Type:</span>
+                                                <span>{{ match.matchInfo.matchFormat }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="match-footer">
+                                        <span>{{ match.matchInfo.state }}</span>
+                                        <a href="{% url 'scorecard' match_id=match.matchInfo.matchId %}" class="view-details">View Scorecard →</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p class="no-matches">No live matches at the moment.</p>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Squad Players{% endblock %}
+
+{% block content %}
+<div class="players-container">
+    <div class="container-fluid py-4">
+        {% if squad_data.error %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                {{ squad_data.error }}
+            </div>
+        {% else %}
+            <div class="squad-header mb-4">
+                <h3 class="section-title">{{ squad_data.squadType }}</h3>
+                <p class="team-name text-center">{{ squad_data.teamName }}</p>
+            </div>
+
+            {% if squad_data.players_by_role %}
+                {% for role, players in squad_data.players_by_role.items %}
+                    <div class="role-section mb-4">
+                        <h4 class="role-title">{{ role }}</h4>
+                        <div class="row g-4">
+                            {% for player in players %}
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="player-card">
+                                        <div class="player-header">
+                                            <div class="player-name">
+                                                {{ player.name }}
+                                                {% if player.captain %}
+                                                    <span class="captain-badge">
+                                                        <i class="fas fa-star"></i> Captain
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="player-role">{{ player.role }}</div>
+                                        </div>
+                                        
+                                        <div class="player-stats">
+                                            {% if player.battingStyle %}
+                                                <div class="stat-item">
+                                                    <i class="fas fa-baseball-bat"></i>
+                                                    <span>{{ player.battingStyle }}</span>
+                                                </div>
+                                            {% endif %}
+                                            {% if player.bowlingStyle %}
+                                                <div class="stat-item">
+                                                    <i class="fas fa-baseball"></i>
+                                                    <span>{{ player.bowlingStyle }}</span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="player-actions">
+                                            <a href="{% url 'player_info' player.id %}" class="action-btn">
+                                                <i class="fas fa-user"></i> View Profile
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No players available in this squad.
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .players-container {
+        min-height: 100vh;
+        background-color: #f8f9fa;
+        padding: 20px 0;
+    }
+
+    .section-title {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .team-name {
+        color: #3498db;
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+    }
+
+    .role-title {
+        color: #2c3e50;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #3498db;
+    }
+
+    .player-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .player-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .player-header {
+        margin-bottom: 15px;
+    }
+
+    .player-name {
+        color: #2c3e50;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .captain-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        background-color: #ffd700;
+        color: #856404;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .player-role {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .player-stats {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .player-actions {
+        margin-top: auto;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        color: #6c757d;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        background-color: #3498db;
+        color: #fff;
+        border-color: #3498db;
+    }
+
+    @media (max-width: 768px) {
+        .section-title {
+            font-size: 1.4rem;
+        }
+
+        .team-name {
+            font-size: 1rem;
+        }
+
+        .role-title {
+            font-size: 1.1rem;
+        }
+
+        .player-name {
+            font-size: 1rem;
+        }
+
+        .captain-badge {
+            font-size: 0.7rem;
+        }
+    }
+</style>
+{% endblock %}

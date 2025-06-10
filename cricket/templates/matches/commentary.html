@@ -1,0 +1,244 @@
+{% extends 'score_navbar.html' %}
+
+{% block match_content %}
+<style>
+    .commentary-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .match-header-card {
+        background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+        color: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .match-header-card h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .match-header-card p {
+        margin: 0.5rem 0 0;
+        opacity: 0.9;
+    }
+
+    .score-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .current-score {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a2a6c;
+        margin-bottom: 0.5rem;
+    }
+
+    .run-rate {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .player-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .player-section {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .player-section h5 {
+        color: #495057;
+        margin-bottom: 0.8rem;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .player-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        background: white;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+    }
+
+    .player-name {
+        font-weight: 500;
+    }
+
+    .player-score {
+        color: #1a2a6c;
+    }
+
+    .commentary-section {
+        margin-top: 2rem;
+    }
+
+    .commentary-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .commentary-item {
+        background: white;
+        border-radius: 10px;
+        padding: 1rem;
+        border-left: 4px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .commentary-item:hover {
+        transform: translateX(5px);
+        border-left-color: #1a2a6c;
+    }
+
+    .over-number {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+
+    .commentary-text {
+        color: #212529;
+        line-height: 1.5;
+    }
+
+    .event-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-top: 0.5rem;
+    }
+
+    .event-wicket {
+        background: #dc3545;
+        color: white;
+    }
+
+    .event-four {
+        background: #007bff;
+        color: white;
+    }
+
+    .event-six {
+        background: #28a745;
+        color: white;
+    }
+
+    .last-wicket {
+        background: #fff3f3;
+        border-left: 4px solid #dc3545;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    .last-wicket h5 {
+        color: #dc3545;
+        margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .player-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .current-score {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="commentary-container">
+    <!-- Match Header -->
+    <div class="match-header-card">
+        <h3>{{ data.matchHeader.seriesDesc }}</h3>
+        <p>{{ data.matchHeader.matchDescription }} - {{ data.matchHeader.status }}</p>
+    </div>
+
+    <!-- Current Score -->
+    <div class="score-card">
+        <div class="current-score">
+            {{ data.miniscore.batTeam.teamScore }}/{{ data.miniscore.batTeam.teamWkts }}
+        </div>
+        <div class="run-rate">
+            Overs: {{ data.miniscore.overs }} (RR: {{ data.miniscore.currentRunRate }})
+        </div>
+
+        <div class="player-stats">
+            <!-- Batsmen -->
+            <div class="player-section">
+                <h5>Batsmen</h5>
+                <div class="player-info">
+                    <span class="player-name">{{ data.miniscore.batsmanStriker.batName }} *</span>
+                    <span class="player-score">{{ data.miniscore.batsmanStriker.batRuns }}({{ data.miniscore.batsmanStriker.batBalls }})</span>
+                </div>
+                {% if data.miniscore.batsmanNonStriker.batName %}
+                <div class="player-info">
+                    <span class="player-name">{{ data.miniscore.batsmanNonStriker.batName }}</span>
+                    <span class="player-score">{{ data.miniscore.batsmanNonStriker.batRuns }}({{ data.miniscore.batsmanNonStriker.batBalls }})</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Bowler -->
+            <div class="player-section">
+                <h5>Bowler</h5>
+                <div class="player-info">
+                    <span class="player-name">{{ data.miniscore.bowlerStriker.bowlName }}</span>
+                    <span class="player-score">{{ data.miniscore.bowlerStriker.bowlWkts }}/{{ data.miniscore.bowlerStriker.bowlRuns }} ({{ data.miniscore.bowlerStriker.bowlOvs }})</span>
+                </div>
+            </div>
+        </div>
+
+        {% if data.miniscore.lastWicket %}
+        <div class="last-wicket">
+            <h5>Last Wicket</h5>
+            <p>{{ data.miniscore.lastWicket }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Commentary -->
+    <div class="commentary-section">
+        <div class="commentary-list">
+            {% for comm in data.commentaryList %}
+            <div class="commentary-item">
+                {% if comm.overNumber %}
+                <div class="over-number">Over {{ comm.overNumber }}</div>
+                {% endif %}
+                <div class="commentary-text">{{ comm.commText }}</div>
+                {% if comm.event == 'WICKET' %}
+                <span class="event-badge event-wicket">Wicket</span>
+                {% endif %}
+                {% if comm.event == 'FOUR' %}
+                <span class="event-badge event-four">FOUR</span>
+                {% endif %}
+                {% if comm.event == 'SIX' %}
+                <span class="event-badge event-six">SIX</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

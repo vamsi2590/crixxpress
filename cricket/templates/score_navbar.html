@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .score-navbar {
+        background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+        padding: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        border-radius: 12px;
+    }
+
+    .score-nav-list {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .score-nav-item {
+        position: relative;
+    }
+
+    .score-nav-item a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+    }
+
+    .score-nav-item a:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .score-nav-item.active a {
+        background: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .score-nav-item.active::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 6px;
+        height: 6px;
+        background: #ffffff;
+        border-radius: 50%;
+    }
+
+    @media (max-width: 768px) {
+        .score-navbar {
+            padding: 0.8rem;
+            margin: 1rem;
+            border-radius: 8px;
+        }
+
+        .score-nav-list {
+            gap: 0.5rem;
+        }
+
+        .score-nav-item a {
+            padding: 0.6rem 1rem;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+<nav class="score-navbar">
+    <ul class="score-nav-list">
+        <li class="score-nav-item {% if active_tab == 'commentary' %}active{% endif %}">
+            <a href="{% url 'commentary' match_id=match_id %}">Commentary</a>
+        </li>
+        <li class="score-nav-item {% if active_tab == 'scorecard' %}active{% endif %}">
+            <a href="{% url 'scorecard' match_id=match_id %}">Scorecard</a>
+        </li>
+        <li class="score-nav-item {% if active_tab == 'match_facts' %}active{% endif %}">
+            <a href="{% url 'match_info' match_id=match_id %}">Match Info</a>
+        </li>
+    </ul>
+</nav>
+
+{% block match_content %}{% endblock %}
+{% endblock %}

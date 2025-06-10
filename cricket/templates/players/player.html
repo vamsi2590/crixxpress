@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+
+{% block title %}Trending Players - Cricket Hub{% endblock %}
+
+{% block content %}
+<div class="trending-container">
+    <div class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">Trending Players</h1>
+            <p class="subtitle">Discover the world's top cricket talents</p>
+        </div>
+    </div>
+
+    <form class="search-form" action="{% url 'search_player' %}" method="GET">
+        <div class="search-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" name="plrN" class="search-input" placeholder="Search for players..." required>
+            <button type="submit" class="search-button">
+                <span>Search</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </form>
+
+    {% if error %}
+    <div class="alert alert-danger">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="results-grid">
+        {% for player in player %}
+        <div class="player-card">
+            <div class="player-info">
+                <div class="name-section">
+                    <span class="player-initial">{{ player.name|slice:":1" }}</span>
+                    <h3>{{ player.name }}</h3>
+                </div>
+                <div class="details-section">
+                    <span class="team-badge">{{ player.teamName }}</span>
+                    <div class="stats">
+                        <span class="stat">
+                            <i class="fas fa-trophy"></i>
+                            International
+                        </span>
+                    </div>
+                </div>
+                <a href="{% url 'player_info' player_id=player.id %}" class="view-profile">
+                    View Profile
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% block extra_css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+    :root {
+        --primary: #4f46e5;
+        --primary-dark: #4338ca;
+        --secondary: #0ea5e9;
+        --accent: #8b5cf6;
+        --background: #f8fafc;
+        --card-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --success: #22c55e;
+        --danger: #ef4444;
+    }
+
+    body {
+        background: var(--background);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .trending-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border-radius: 1rem;
+        color: white;
+        box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.1);
+    }
+
+    .header-content {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0.8));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .search-wrapper {
+        position: relative;
+        max-width: 600px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        border-radius: 1rem;
+        padding: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+    }
+
+    .search-icon {
+        color: var(--text-secondary);
+        margin-left: 1rem;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 1rem;
+        border: none;
+        background: transparent;
+        font-size: 1rem;
+        color: var(--text-primary);
+    }
+
+    .search-input:focus {
+        outline: none;
+    }
+
+    .search-button {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .search-button:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+    }
+
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .player-card {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .player-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .player-info {
+        padding: 1.5rem;
+    }
+
+    .name-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .player-initial {
+        width: 3rem;
+        height: 3rem;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: white;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .player-info h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .details-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .team-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        background: rgba(79, 70, 229, 0.1);
+        color: var(--primary);
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    .stats {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .stat {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .view-profile {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1rem;
+        background: linear-gradient(to right, var(--primary), var(--accent));
+        color: white;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .view-profile:hover {
+        opacity: 0.9;
+        transform: translateX(5px);
+    }
+
+    .alert {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .alert-danger {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .trending-container {
+            padding: 1rem;
+        }
+
+        .page-header {
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .search-wrapper {
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .search-button {
+            width: 100%;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        .results-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+{% endblock %}

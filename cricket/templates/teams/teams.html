@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cricket Teams - {{ team_type|title }}{% endblock %}
+
+{% block content %}
+<div class="teams-container">
+    <!-- Team Type Navigation -->
+    <div class="team-nav-wrapper">
+        <div class="container">
+            <ul class="team-nav">
+                {% for type in valid_types %}
+                <li class="team-nav-item">
+                    <a class="team-nav-link {% if team_type == type %}active{% endif %}" 
+                       href="{% url 'teams' team_type=type %}">
+                        {{ type|title }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        {% if teams_data %}
+            <!-- Teams Grid -->
+            <div class="teams-grid">
+                {% for team in teams_data.list %}
+                    {% if team.teamId %}
+                        <div class="team-card">
+                            <a href="{% url 'team_details' team_id=team.teamId %}" class="team-card-inner">
+                                <div class="team-info">
+                                    <h3 class="team-name">{{ team.teamName }}</h3>
+                                    {% if team.teamSName %}
+                                        <span class="team-short-name">{{ team.teamSName }}</span>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        </div>
+                    {% else %}
+                        <!-- Section Headers -->
+                        <div class="section-header">
+                            <h2>{{ team.teamName }}</h2>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-teams">
+                <p>No teams available for this category.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .teams-container {
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 60px);
+        padding: 2rem 0;
+    }
+
+    .team-nav-wrapper {
+        background: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .team-nav {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .team-nav-item {
+        flex: 0 0 auto;
+    }
+
+    .team-nav-link {
+        display: block;
+        padding: 15px 25px;
+        color: #6c757d;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+    }
+
+    .team-nav-link:hover {
+        color: #4f46e5;
+        text-decoration: none;
+    }
+
+    .team-nav-link.active {
+        color: #4f46e5;
+        border-bottom-color: #4f46e5;
+    }
+
+    .teams-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        padding: 1rem 0;
+    }
+
+    .section-header {
+        grid-column: 1 / -1;
+        margin: 2rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid rgba(79, 70, 229, 0.2);
+    }
+
+    .section-header h2 {
+        color: #4f46e5;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .team-card {
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: 1px solid #e2e8f0;
+    }
+
+    .team-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .team-card-inner {
+        display: block;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .team-card-inner:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .team-info {
+        text-align: center;
+    }
+
+    .team-name {
+        color: #1a1c2e;
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .team-short-name {
+        display: block;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .no-teams {
+        text-align: center;
+        padding: 3rem;
+        background: #fff;
+        border-radius: 10px;
+        color: #6c757d;
+    }
+
+    @media (max-width: 768px) {
+        .teams-grid {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1rem;
+            padding: 0.5rem;
+        }
+
+        .team-nav-link {
+            padding: 12px 20px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}

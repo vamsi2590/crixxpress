@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Series Squads{% endblock %}
+
+{% block content %}
+<div class="squads-container">
+    <div class="container-fluid py-4">
+        {% if squads_data.error %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                {{ squads_data.error }}
+            </div>
+        {% else %}
+            <div class="series-header mb-4">
+                <h3 class="section-title">{{ squads_data.seriesName }}</h3>
+                <p class="series-dates text-center">
+                    {{ squads_data.startDate|date:"M d" }} - {{ squads_data.endDate|date:"M d, Y" }}
+                </p>
+            </div>
+
+            {% if squads_data.squads %}
+                <div class="row g-4">
+                    {% for squad in squads_data.squads %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="squad-card">
+                                <div class="squad-header">
+                                    <h5 class="squad-name">{{ squad.squadType }}</h5>
+                                    <span class="player-count">
+                                        <i class="fas fa-users"></i>
+                                        {{ squad.players|length }} Players
+                                    </span>
+                                </div>
+                                <div class="squad-info">
+                                    <div class="team-name">{{ squad.teamName }}</div>
+                                </div>
+                                <div class="squad-actions">
+                                    <a href="{% url 'squad_players' squads_data.seriesId squad.squadId %}" class="action-btn">
+                                        <i class="fas fa-eye"></i> View Players
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No squads available for this series.
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .squads-container {
+        min-height: 100vh;
+        background-color: #f8f9fa;
+        padding: 20px 0;
+    }
+
+    .section-title {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .series-dates {
+        color: #6c757d;
+        font-size: 1rem;
+        margin-bottom: 30px;
+    }
+
+    .squad-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        height: 100%;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .squad-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .squad-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .squad-name {
+        color: #2c3e50;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .player-count {
+        color: #6c757d;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .squad-info {
+        margin-bottom: 20px;
+    }
+
+    .team-name {
+        color: #3498db;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .squad-actions {
+        margin-top: auto;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        color: #6c757d;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        background-color: #3498db;
+        color: #fff;
+        border-color: #3498db;
+    }
+
+    @media (max-width: 768px) {
+        .section-title {
+            font-size: 1.4rem;
+        }
+
+        .squad-name {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,314 @@
+{% extends 'score_navbar.html' %}
+
+{% block match_content %}
+<style>
+    .match-container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+
+    .match-header {
+        background: linear-gradient(to right, #2c3e50, #3498db);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .match-header h3 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .match-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .team-box {
+        text-align: center;
+        flex: 1;
+    }
+
+    .vs-text {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin: 0 20px;
+    }
+
+    .match-details {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .detail-item {
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+
+    .detail-item strong {
+        display: block;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+
+    .squad-section {
+        margin-top: 20px;
+    }
+
+    .squad-header {
+        background: #2c3e50;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    .squad-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-bottom: 20px;
+    }
+
+    .squad-table th {
+        background: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+        color: #2c3e50;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .squad-table td {
+        padding: 12px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .squad-table tr:hover {
+        background: #f8f9fa;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        margin-left: 5px;
+    }
+
+    .badge-captain {
+        background: #ffd700;
+        color: #2c3e50;
+    }
+
+    .badge-keeper {
+        background: #3498db;
+        color: white;
+    }
+
+    .officials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .official-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    @media (max-width: 768px) {
+        .match-info {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .vs-text {
+            margin: 10px 0;
+        }
+
+        .squad-table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+</style>
+
+<div class="match-container">
+    {% if match_data %}
+        <div class="match-header">
+            <h3>{{ match_data.matchInfo.series.name }}</h3>
+            <small>{{ match_data.matchInfo.matchDescription }}</small>
+        </div>
+
+        <div class="match-info">
+            <div class="team-box">
+                <h4>{{ match_data.matchInfo.team1.name }}</h4>
+            </div>
+            <div class="vs-text">VS</div>
+            <div class="team-box">
+                <h4>{{ match_data.matchInfo.team2.name }}</h4>
+            </div>
+        </div>
+
+        <div class="match-details">
+            <div class="details-grid">
+                <div class="detail-item">
+                    <strong>Format</strong>
+                    <span>{{ match_data.matchInfo.matchFormat }}</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Venue</strong>
+                    <span>{{ match_data.venueInfo.ground }}, {{ match_data.venueInfo.city }}</span>
+                </div>
+                {% if match_data.matchInfo.tossResults %}
+                <div class="detail-item">
+                    <strong>Toss</strong>
+                    <span>{{ match_data.matchInfo.tossResults.tossWinnerName }} won & {{ match_data.matchInfo.tossResults.decision|lower }}</span>
+                </div>
+                {% endif %}
+                {% if match_data.matchInfo.result %}
+                <div class="detail-item">
+                    <strong>Result</strong>
+                    <span>{{ match_data.matchInfo.result.winningTeam }} won by 
+                    {% if match_data.matchInfo.result.winByRuns %}
+                        {{ match_data.matchInfo.result.winningMargin }} runs
+                    {% else %}
+                        {{ match_data.matchInfo.result.winningMargin }} wickets
+                    {% endif %}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Team 1 Squad -->
+            <div class="squad-section">
+                <div class="squad-header">
+                    <h4>{{ match_data.matchInfo.team1.name }} Squad</h4>
+                </div>
+                <table class="squad-table">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Role</th>
+                            <th>Batting</th>
+                            <th>Bowling</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in match_data.matchInfo.team1.playerDetails %}
+                        {% if not player.substitute %}
+                        <tr>
+                            <td>
+                                {{ player.name }}
+                                {% if player.captain %}<span class="badge badge-captain">C</span>{% endif %}
+                                {% if player.keeper %}<span class="badge badge-keeper">WK</span>{% endif %}
+                            </td>
+                            <td>{{ player.role|default:"-" }}</td>
+                            <td>{{ player.battingStyle|default:"-" }}</td>
+                            <td>{{ player.bowlingStyle|default:"-" }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Team 2 Squad -->
+            <div class="squad-section">
+                <div class="squad-header">
+                    <h4>{{ match_data.matchInfo.team2.name }} Squad</h4>
+                </div>
+                <table class="squad-table">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Role</th>
+                            <th>Batting</th>
+                            <th>Bowling</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in match_data.matchInfo.team2.playerDetails %}
+                        {% if not player.substitute %}
+                        <tr>
+                            <td>
+                                {{ player.name }}
+                                {% if player.captain %}<span class="badge badge-captain">C</span>{% endif %}
+                                {% if player.keeper %}<span class="badge badge-keeper">WK</span>{% endif %}
+                            </td>
+                            <td>{{ player.role|default:"-" }}</td>
+                            <td>{{ player.battingStyle|default:"-" }}</td>
+                            <td>{{ player.bowlingStyle|default:"-" }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Match Officials -->
+            <div class="squad-header">
+                <h4>Match Officials</h4>
+            </div>
+            <div class="officials-grid">
+                {% if match_data.matchInfo.umpire1 %}
+                <div class="official-card">
+                    <strong>Umpire 1</strong>
+                    <p>{{ match_data.matchInfo.umpire1.name }} ({{ match_data.matchInfo.umpire1.country }})</p>
+                </div>
+                {% endif %}
+                {% if match_data.matchInfo.umpire2 %}
+                <div class="official-card">
+                    <strong>Umpire 2</strong>
+                    <p>{{ match_data.matchInfo.umpire2.name }} ({{ match_data.matchInfo.umpire2.country }})</p>
+                </div>
+                {% endif %}
+                {% if match_data.matchInfo.umpire3 %}
+                <div class="official-card">
+                    <strong>Third Umpire</strong>
+                    <p>{{ match_data.matchInfo.umpire3.name }} ({{ match_data.matchInfo.umpire3.country }})</p>
+                </div>
+                {% endif %}
+                {% if match_data.matchInfo.referee %}
+                <div class="official-card">
+                    <strong>Match Referee</strong>
+                    <p>{{ match_data.matchInfo.referee.name }} ({{ match_data.matchInfo.referee.country }})</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="match-details">
+            <div class="alert alert-danger">
+                {% if error %}
+                    {{ error }}
+                {% else %}
+                    No match data available
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

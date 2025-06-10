@@ -1,0 +1,225 @@
+{% extends 'score_navbar.html' %}
+
+{% block match_content %}
+<style>
+    .scorecard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .innings-section {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .innings-header {
+        background: linear-gradient(to right, #2c3e50, #3498db);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .innings-header h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .batting-table, .bowling-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-bottom: 2rem;
+    }
+
+    .batting-table th, .bowling-table th {
+        background: #f8f9fa;
+        color: #2c3e50;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .batting-table td, .bowling-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .batting-table tr:hover td, .bowling-table tr:hover td {
+        background: #f8f9fa;
+    }
+
+    .batter-name {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .dismissal {
+        display: block;
+        color: #666;
+        font-size: 0.9rem;
+        font-weight: normal;
+        margin-top: 0.3rem;
+    }
+
+    .extras, .total {
+        background: #f8f9fa;
+        font-weight: 600;
+    }
+
+    .extras td, .total td {
+        padding: 1rem;
+    }
+
+    .fall-of-wickets {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 2rem 0;
+        line-height: 1.6;
+    }
+
+    .fall-of-wickets strong {
+        color: #2c3e50;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .wicket-fall {
+        display: inline-block;
+        margin-right: 1.5rem;
+        color: #666;
+    }
+
+    .stats-highlight {
+        color: #e74c3c;
+        font-weight: 600;
+    }
+
+    .player-milestone {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        background: #2ecc71;
+        color: white;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .innings-section {
+            padding: 1rem;
+            margin: 1rem;
+        }
+
+        .innings-header {
+            padding: 1rem;
+        }
+
+        .batting-table, .bowling-table {
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .batting-table th, .bowling-table th,
+        .batting-table td, .bowling-table td {
+            padding: 0.8rem;
+            white-space: nowrap;
+        }
+    }
+</style>
+
+<div class="scorecard-container">
+    {% for innings in scorecard.scoreCard %}
+    <div class="innings-section">
+        <div class="innings-header">
+            <h3>{{ innings.batTeamDetails.batTeamName }} - {{ innings.scoreDetails.runs }} ({{ innings.scoreDetails.overs }} Ov)</h3>
+        </div>
+
+        <table class="batting-table">
+            <thead>
+                <tr>
+                    <th>Batter</th>
+                    <th>R</th>
+                    <th>B</th>
+                    <th>4s</th>
+                    <th>6s</th>
+                    <th>SR</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, batsman in innings.batTeamDetails.batsmenData.items %}
+                <tr>
+                    <td class="batter-name">
+                        {{ batsman.batName }}
+                        {% if batsman.outDesc %}
+                        <span class="dismissal">{{ batsman.outDesc }}</span>
+                        {% endif %}
+                        {% if batsman.runs >= 50 %}
+                        <span class="player-milestone">{{ batsman.runs }}{% if batsman.runs >= 100 %}*{% endif %}</span>
+                        {% endif %}
+                    </td>
+                    <td class="{% if batsman.runs >= 50 %}stats-highlight{% endif %}">{{ batsman.runs }}</td>
+                    <td>{{ batsman.balls }}</td>
+                    <td>{{ batsman.fours }}</td>
+                    <td>{{ batsman.sixes }}</td>
+                    <td>{{ batsman.strikeRate }}</td>
+                </tr>
+                {% endfor %}
+                <tr class="extras">
+                    <td colspan="6">Extras: {{ innings.scoreDetails.extras }} (b {{ innings.scoreDetails.extrasDetail.byes }}, lb {{ innings.scoreDetails.extrasDetail.legByes }}, w {{ innings.scoreDetails.extrasDetail.wides }}, nb {{ innings.scoreDetails.extrasDetail.noBalls }})</td>
+                </tr>
+                <tr class="total">
+                    <td colspan="6">Total: {{ innings.scoreDetails.runs }} ({{ innings.scoreDetails.wickets }} wkts, {{ innings.scoreDetails.overs }} Ov)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="fall-of-wickets">
+            <strong>Fall of Wickets</strong>
+            {% for key, wicket in innings.wicketsData.items %}
+            <span class="wicket-fall">
+                {{ wicket.wktRuns }}-{{ loop.index }} ({{ wicket.batName }}, {{ wicket.wktOver }} ov)
+            </span>
+            {% endfor %}
+        </div>
+
+        <table class="bowling-table">
+            <thead>
+                <tr>
+                    <th>Bowler</th>
+                    <th>O</th>
+                    <th>M</th>
+                    <th>R</th>
+                    <th>W</th>
+                    <th>NB</th>
+                    <th>WD</th>
+                    <th>ECO</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, bowler in innings.bowlTeamDetails.bowlersData.items %}
+                <tr>
+                    <td class="batter-name">{{ bowler.bowlName }}</td>
+                    <td>{{ bowler.overs }}</td>
+                    <td>{{ bowler.maidens }}</td>
+                    <td>{{ bowler.runs }}</td>
+                    <td class="{% if bowler.wickets >= 3 %}stats-highlight{% endif %}">{{ bowler.wickets }}</td>
+                    <td>{{ bowler.noBalls }}</td>
+                    <td>{{ bowler.wides }}</td>
+                    <td>{{ bowler.economy }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
