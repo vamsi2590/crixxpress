@@ -14,9 +14,8 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 # 3. Copy the rest of the app
 COPY . .
 
-# 4. (Optional) Run migrations at build time (if really needed)
-# RUN python manage.py migrate --no-input
-# RUN python manage.py collectstatic --no-input
+# 4. Override POSTBUILD_COMMANDS to prevent external interference
+ENV POSTBUILD_COMMANDS=""
 
-# 5. Run Gunicorn
-CMD ["gunicorn", "Morax.wsgi:application", "--bind", "0.0.0.0:8080"]
+# 5. Run migrations + Gunicorn at startup (not build time)
+CMD ["sh", "-c", "python manage.py migrate && gunicorn Morax.wsgi:application --bind 0.0.0.0:8080"]
