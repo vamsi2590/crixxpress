@@ -1,11 +1,17 @@
 FROM python:3.11-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-# No CMD needed here (Kuern will use Deploy Config)
 
-# At the very end of your Dockerfile
-RUN echo "#!/bin/sh\npython manage.py migrate\npython manage.py collectstatic --no-input\nexec gunicorn CricSphere.wsgi:application --bind 0.0.0.0:8080" > /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+# Set environment variables (PROPERLY escaped)
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Copy application
+COPY . .
+
+# Single command to run everything (proper quoting)
+CMD sh -c "python manage.py migrate && python manage.py collectstatic --no-input && gunicorn CricSphere.wsgi:application --bind 0.0.0.0:8080"
